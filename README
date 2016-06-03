@@ -1,0 +1,147 @@
+nph - PH Client and Library
+===
+
+nph is a modern client and API library for accessing PH servers.
+
+
+Installation
+------------
+
+To build nph, you should be able to simply run these commands:
+
+   ./configure
+   make
+   make install
+
+
+Encap Package Support
+---------------------
+
+To build this software as an Encap package, you can pass the
+--enable-encap option to configure.  This will be automatically
+enabled if the epkg or mkencap programs are detected on the system,
+but can be overridden by the --disable-encap option.
+
+When building an Encap package, the configure script will automatically
+adjust the installation prefix to use an appropriate Encap package
+directory.  It does this using a heuristic algorithm which examines the
+values of the ${ENCAP_SOURCE} and ${ENCAP_TARGET} environment variables
+and the argument to configure's --prefix option.
+
+If mkencap was detected on the system, it will be automatically run during
+"make install".  By default, epkg will also be run, but this can be
+inhibited with the --disable-epkg-install configure option.
+
+For information on the Encap package management system, see the WSG
+Encap Archive:
+
+   http://www.encap.org/
+
+
+Readline Support
+----------------
+
+The configure script will attempt to find the readline library on
+your system.  The readline package is available from:
+
+   ftp://ftp.gnu.org/gnu/readline/
+
+If you do not have readline-4.2 or newer, you will need to specify the
+--disable-readline option to configure.
+
+
+Installing nph Setuid
+---------------------
+
+If you wish to use PH's email authentication mechanism, you must install
+nph to be setuid-root using the --enable-setuid-nph option to configure.
+
+SECURITY WARNING:
+   Installing nph as a setuid-root binary may constitute a serious
+   security hole!  While I do not know of any security holes in nph,
+   I make no guaruntees about your system security.  I strongly
+   recommend against using --enable-setuid-nph unless it is
+   absolutely unavoidable.
+
+
+Default "mailmatch" Fields
+--------------------------
+
+For PH servers that don't have a "mailmatches" entry in their siteinfo
+list, libphclient will use a built-in default for the list of fields to
+check when resolving email addresses.  This default list can be set by
+specifying the --with-mailmatches=LIST option to configure.  (Replace
+"LIST" with a ':'-delimited list of field names.)
+
+If this option is not specified, the default list is "alias:callsign".
+
+
+More Information
+----------------
+
+After you install nph, you will need to tell it what server to connect to.
+This can be set in the global ${sysconfdir}/ph_server file or by setting
+the environment variable ${PH_SERVER}.  Alternately, you can invoke nph
+with "-s servername" to specify the server name on the commandline.
+
+For documentation on nph or on the libphclient API, see the enclosed
+manpages.  For more information on the nph package, see:
+
+   http://www.feep.net/nph/
+
+Both source code and Encap binary distributions of the latest version
+of nph are available there.
+
+
+Supported Platforms
+-------------------
+
+I develop and test nph on the following platforms:
+
+   AIX 4.3.3
+   AIX 5.1
+   HP-UX 11.00
+   IRIX 6.5
+   RedHat Linux 7.2
+   Solaris 8
+   Solaris 9
+
+The nph code should build properly on the following platforms, but I
+do not actively support them:
+
+   AIX 3.2.5
+   AIX 4.2.1
+   FreeBSD
+   HP-UX 10.20
+   Linux/libc5
+   RedHat Linux 8.0
+   Mac OS X
+   OpenBSD
+   Solaris 2.5
+   Solaris 2.6
+   Solaris 7
+
+If you successfully build nph on another platform, please email me a
+patch and/or configuration information.
+
+
+Compatibility Code
+------------------
+
+nph depends on some library calls which are not available or not
+usable on some platforms.  To accomodate these systems, I've included
+a version of these calls in the lib/compat subdirectory.
+
+I've slightly modified these functions for integration into this source
+tree, but the functionality has not been modified from the original
+source.  Please note that while this code should work for you, I didn't
+write it, so please don't send me bug reports on it.
+
+
+Author
+------
+
+Feedback and bug reports are welcome.
+
+Mark D. Roth <roth@feep.net>
+

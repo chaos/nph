@@ -1,0 +1,4 @@
+2002-11-24	syntax change to work around pointer arithmetic 
+		problem with IRIX compiler
+
+2002-10-16	initial version

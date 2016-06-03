@@ -1,0 +1,560 @@
+nph 1.2.3 - 6/17/04
+---------
+
+- updated ph_open(3) man page
+- updated ph_email_resolve(3) man page
+- added PH_ERR_READONLY constant
+- modified ph_change(), ph_add(), and ph_delete() to return
+  PH_ERR_READONLY when server is in read-only mode
+  (note that this also affects ph_passwd(), since it uses ph_change())
+- modified nph "change", "add", "delete", and "edit" commands to
+  check for PH_ERR_READONLY return value from libphclient
+- fixed ph_email_resolve() to avoid segfault if user name is all
+  punctuation or all spaces
+  (thanks to Neil Rickert <rickert@cs.niu.edu> for the bug report)
+- added "keyfields=" option to nph "resolve_email" command
+
+----------------------------------------------------------------------------
+
+nph 1.2.2 - 7/2/03
+---------
+
+- fixed ph_open() to check that result parameter of gethostbyname_r()
+  and getservbyname_r() is non-NULL
+  (was causing segfault under Linux for unknown hostnames; thanks to
+   Damian Menscher <menscher@uiuc.edu> for the bug report)
+- fixed segfault in nph "make" command
+
+----------------------------------------------------------------------------
+
+nph 1.2.1 - 5/9/03
+---------
+
+- minor portability fixes
+- better handling of postinstall script in top-level Makefile
+- fixed bug in ph_email_resolve() that caused a segfault when querying
+  based on the "name" field
+  (thanks to Neil Rickert <rickert@cs.niu.edu> and
+   Doug Brenner <doug-brenner@uiowa.edu> for the bug reports)
+- renamed MASK macro in lib/auth.c to avoid conflict with OS X header files
+  (thanks to Andrew Laurence <atlauren@uci.edu> for the bug report)
+- added autoconf test for _SC_GETPW_R_SIZE_MAX
+  (thanks to Jon Roma <roma@uiuc.edu> and Andrew Laurence <atlauren@uci.edu>
+   for the bug reports)
+
+----------------------------------------------------------------------------
+
+nph 1.2.0 - 11/24/02
+---------
+
+- updated README file
+- added libphclient_is_thread_safe variable to libphclient API
+- updated compat code
+- minor portability fixes
+
+----------------------------------------------------------------------------
+
+nph 1.2.dev1 - 11/11/02
+------------
+
+- use poll() or select() to avoid SIGPIPE in ph_send_command()
+- replaced ph_fd() function with ph_rfd() and ph_wfd()
+
+----------------------------------------------------------------------------
+
+nph 1.2.dev0 - 10/19/02
+------------
+
+- libphclient API changes:
+  - use clearer names for constant macros in <phclient.h>
+  - add prefixes to field names in all structures
+  - pass application-supplied pointer to send/recv hooks
+  - moved PH structure definition out of <phclient.h>
+  - libphclient code is now thread-safe
+- code cleanup:
+  - reformatted code for readability
+  - moved network line buffer code into its own module
+  - moved memory management code into its own module
+- packaging changes:
+  - updated COPYRIGHT info
+  - updated autoconf macros
+  - added --with-mailmatches configure option
+
+----------------------------------------------------------------------------
+
+nph 1.1.8 - 6/14/02
+---------
+
+- fixed postinstall script to find nslookup in either /usr/bin or
+  /usr/sbin
+- updated to autoconf-2.53
+- added ".PHONY" target in top-level Makefile.in to fix portability issue
+  (thanks to Alex J. Lovell-Troy <alovell@uiuc.edu> for the bug report)
+- removed silly extern wrapper from nph/nph.h
+- avoid segfault when requesting a hidden field
+- calculate query output field name width dynamically
+- free fieldinfo cache in ph_login(), ph_logout(), and ph_suser() to
+  accomodate hidden fields that are only visible to heros
+- restructured autoconf macros
+
+----------------------------------------------------------------------------
+
+nph 1.1.7 - 1/30/02
+---------
+
+- fixed postinstall script to properly find domain even if hostname is
+  not set to the FQDN
+  (thanks to Charley LeCrone <lecrone@uiuc.edu> for the suggestion)
+- use $HOME if set instead of getpwuid(getuid())
+- do not use pager in non-interactive mode
+- match option, siteinfo, and field names in a case-insensitive manner
+- minor code cleanups
+- updated to autoconf-2.52
+- improved Makefile portability
+- avoid segfault when "return" is the first word of a query
+  (thanks to Charley LeCrone <lecrone@uiuc.edu> for the bug report)
+- fixed ph_email_resolve() to properly return PH_DATAERR when the matching
+  entry does not have an "email" field
+  (based on patch from Doug Brenner <Doug-Brenner@uiowa.edu>)
+
+----------------------------------------------------------------------------
+
+nph 1.1.6 - 5/29/01
+---------
+
+- updated to use readline-4.2 API
+
+----------------------------------------------------------------------------
+
+nph 1.1.5 - 5/29/01
+---------
+
+- match field names in a case-insensitive manner
+- updated autoconf macros and compat code
+- if server doesn't support "fields" command, avoid infinite loop and
+  assume default field name length of 16
+
+----------------------------------------------------------------------------
+
+nph 1.1.4 - 1/18/01
+---------
+
+- changed ph_serverlist_merge(), ph_email_resolve(),
+  ph_advertised_email(), ph_www_resolve(), and ph_advertised_www()
+  to handle PH_DATAERR when returned from ph_query()
+
+----------------------------------------------------------------------------
+
+nph 1.1.3 - 1/17/01
+---------
+
+- changed ph_query() to return PH_DATAERR for invalid queries
+- changed ph_login() to set errno properly
+- updated autoconf macros
+- automatically add postinstall script when creating Encap package
+- install nphrc and ph_server files from postinstall script instead of
+  from make install target
+- minor code cleanups
+
+----------------------------------------------------------------------------
+
+nph 1.1.2 - 12/13/00
+---------
+
+- fixed "set" command to properly display an error when setting a
+  non-existant option
+- fixed autoconf snprintf() test to make sure it NUL-terminates
+- added $(DESTDIR) to Makefiles (patch from Dave Terrell <dbt@meat.net>)
+- replaced $(etcdir) with $(sysconfdir) in nph/Makefile.in
+- Makefile changes to support WSG_PKG and WSG_ENCAP autoconf macros
+
+----------------------------------------------------------------------------
+
+nph 1.1.1 - 10/29/00
+---------
+
+- fixed bug in ph_open() related to non-default port numbers
+- removed reference to ph_free_query() from ph_query() manpage
+- fixed memory leak in nph by calling ph_free_selectors() instead of free()
+- updated README file
+- minor directory structure changes because of CVS setup
+- various portability fixes
+
+----------------------------------------------------------------------------
+
+nph 1.1 - 9/14/00
+-------
+
+- changed argument list for ph_open() 
+- trailing newline is no longer sent to sendhook function
+- nph query output looks more like the original ph client
+
+----------------------------------------------------------------------------
+
+nph 1.0.3 - 9/12/00
+---------
+
+- fixed a bug in ph_get_fieldinfo() which caused a segfault when
+  called with an unknown field name
+- fixed ph_open() not to send the ident string if the connection fails
+- fixed segfault in nph when server returned no status info
+- fixed segfault in nph when user typed "query" or "ph" with no further
+  arguments
+- changed various redundant for() loops to while() loops for strsep()
+- minor manpage corrections
+
+----------------------------------------------------------------------------
+
+nph 1.0.2 - 7/20/00
+---------
+
+- added note to README about requiring readline-4.1 or newer
+- changed ph_get_response() to set errno to ECONNRESET and return -1
+  when read() returns 0
+- declare internal auxiliury functions as static in lib/redirection.c
+- changed ph_open() to fall back to a hardcoded port if the "csnet-ns"
+  service isn't found
+- changed ph_email_resolve() to ignore the fields argument if it points
+  to an empty string
+  (thanks to Jon Roma <roma@uiuc.edu>)
+- improved ph_email_resolve(3) manpage
+  (thanks to Jon Roma <roma@uiuc.edu>)
+- added aclocal.m4 to clean up configure.in
+- removed "inline" declarations
+- portability fixes related to snprintf()
+
+----------------------------------------------------------------------------
+
+nph 1.0.1 - 5/27/00
+---------
+
+- changed PH_DEFAULT_MAILMATCHES to "alias:callsign"
+- changed ph_email_resolve() to terminate the returned address at the first
+  whitespace or comma
+- fixed error in lib/options.c which failed to return 0 on successful
+  return from ph_retrieve_options()
+- fixed error in lib/options.c which failed to set errno to EINVAL in
+  ph_set_option()
+- removed declarations for various unused variables
+- fixed nph/Makefile.in to strip installed nph binary
+
+----------------------------------------------------------------------------
+
+nph 1.0 - 5/9/00
+-------
+
+- First public release
+
+----------------------------------------------------------------------------
+
+nph 0.10.7 - 4/21/00
+----------
+
+- fixed NULL pointer problem with defaultfield and returnfields options
+
+----------------------------------------------------------------------------
+
+nph 0.10.6 - 4/7/00
+----------
+
+- portability fix: use autoconf to detect <crypt.h>
+  (thanks to Dave Terrell <dbt@meat.net> for the patch)
+- fixed segfault caused by logging in and then quitting
+  (thanks to Geoff Raye <geoff@raye.com> for the bug report)
+- added $(CFLAGS) to link link in nph/Makefile.in
+
+----------------------------------------------------------------------------
+
+nph 0.10.5 - 4/2/00
+----------
+
+- fixed lib/stack.c to avoid calling free() on a NULL pointer
+  (needed to prevent segfault in sendmail timeout code)
+
+----------------------------------------------------------------------------
+
+nph 0.10.4 - 4/1/00
+----------
+
+- fixed bugs in field alias code
+- fixed C preprocessor typo in lib/query.c
+- simplified readline detection
+- removed a patch from 0.10.2 which declared variables as extern and then
+  later without extern to prevent vendor compiler horkage
+- changed nph/Makefile.in to install a default ph_server file
+
+----------------------------------------------------------------------------
+
+nph 0.10.3 - 3/29/00
+----------
+
+- added "defaultfield" option to set field for selectors which do not
+  specify a field name
+- set rl_readline_name in nph/interactive.c
+- fixed option parsing (broken from 0.10.2)
+- added support for field aliases via the "fieldaliases" server option
+
+----------------------------------------------------------------------------
+
+nph 0.10.2 - 3/29/00
+----------
+
+- changed syntax for "option" command to allow whitespace surrounding '='
+- nph calls ph_id() automatically to log its version on the server
+- ph_open() automatically calls ph_id() to log the libphclient version
+  on the server unless the PH_DONTID flag is set
+- if "canonicaladdrs" option is set, nph will always display cannonical
+  email and www fields, even if those fields were directly requested
+  in the return clause
+- added libphclient_version variable to libphclient
+- minor config cleanup
+
+----------------------------------------------------------------------------
+
+nph 0.10.1 - 3/24/00
+----------
+
+- fixed a typo in nph/interactive.c affecting systems without poll()
+- changed nph/content.c to look for "canonicaladdrs" option instead of
+  "showredirects" (was actually renamed in 0.10)
+
+----------------------------------------------------------------------------
+
+nph 0.10 - 3/21/00
+--------
+
+- libphclient changes:
+   - added general-purpose return value macros to <phclient.h> and modified
+     all library functions to use them as appropriate
+   - changed ph_retrieve_*() functions to use stack and only set fields of
+     ph handle when they complete successfully
+   - changed ph_retrieve_*() functions to return 0 immediately if data is
+     already cached locally
+   - added ph_is_*_cached() macros to determine if PH handle fields are valid
+   - moved ph_free_*() functions for fieldlist, options, and siteinfo to the
+     public interface
+   - fixed ph_resolve_www() and ph_advertised_www() to return PH_DATAERR
+     if the matching entry does not have a "www" field
+   - fixed ph_advertised_www() to call ph_resolve_www() if the server
+     doesn't support the "wwwredirects" siteinfo field
+   - fixed ph_change() to return PH_DATAERR if it reads a -LR_VALUE
+     response code
+   - added ph_fd() call
+   - changed NSSERVICE to PH_SERVICE
+   - changed BUF_SIZE to PH_BUF_SIZE
+
+- nph changes:
+   - default server is now determined from commandline, ${PH_SERVER}, or
+     ${prefix}/etc/ph_server (in that order)
+   - check for .nphrc.${PH_SERVER}, then .nphrc, then ${prefix}/etc/nphrc
+     (this allows for per-server dotfiles)
+   - nphrc files are now parsed as nph commands, rather than simply option
+     settings, so any arbitrary command can be run automatically
+   - added "serveradd" command to replace ph_servers file
+   - added "connect" command to connect to a new server
+   - added "source" command to read commands from a file
+   - added "ph" as a synonym for "query" command
+   - changed "servers" to "listservers"
+   - misc updates to reflect libphclient changes above
+   - make sure to call rl_callback_handler_remove() before all exit() calls
+
+- portability fixes:
+   - added check for vfork() to configure script
+   - fixed syntax error in nph/interactive.c for systems without poll()
+   - added a digusting hack in nph/interactive.c to force use of select()
+     over poll() under IRIX
+
+----------------------------------------------------------------------------
+
+nph 0.9.4 - 3/7/00
+---------
+
+- replaced ph_serverlist() call with new calls ph_serverlist_add(),
+  ph_serverlist_iterate(), and ph_serverlist_merge()
+- nph now reads ${prefix}/etc/ph_servers for the default server/site
+  list, and adds to this list from servers which have additional data
+
+----------------------------------------------------------------------------
+
+nph 0.9.3 - 3/5/00
+---------
+
+- changed ph_close() to not wait for a response code if PH_FASTCLOSE is set
+- added lib/serverlist.c module to libphclient and corresponding
+  "servers" command to nph
+- added optional "@domain" argument to nph query command which will perform
+  the query on a known PH server for "domain"
+- replaced global ph_server variable in nph with "server" option
+  (setting this will change which server you are connected to)
+- added "usereservedport" option to nph
+- removed "-p" commandline option to nph (ports are now represented as
+  part of the server name, such as "ns.uiuc.edu:105")
+- nph will now read ${prefix}/etc/nphrc before the user's .nphrc file
+- improved handling of SIGINT in nph readline code
+
+----------------------------------------------------------------------------
+
+nph 0.9.2 - 2/24/00
+---------
+
+- misc portability fixes
+- added error checking for memory allocation in library code
+- added conditional directives to lib/phclient.h to prevent including it twice
+- changed ph_resolve_email() to accept ':' or ' ' as a delimiter in field list
+- added "confirm_alias" argument to ph_advertised_email()
+  and ph_advertised_www()
+- various documentation fixes and updates
+- improved space-padding of field names in query output
+  (thanks to Geoff Raye <geoff@raye.com> for the suggestion)
+- optimized nph query code to add "alias" to list of requested fields rather
+  than requesting all fields and only printing some
+- added "-C" option to tell nph not to read ~/.nphrc
+- changed nph to bail out if "-f rcfile" was used but rcfile doesn't exist
+- nph readline completion code now handles the "return", "make", and
+  "force" keywords
+
+----------------------------------------------------------------------------
+
+nph 0.9.1 - 2/23/00
+---------
+
+- fixed a bug in nph/commands.c which free()'d staticly-allocated memory
+- fixed a bug in nph/conf.c which caused nph to segfault if "-f nphrc"
+  option was used
+- changed ph_query() to return -2 if it encountered an LR_TOOMANY response
+- portability fix: if EPROTO isn't defined, use EINVAL
+
+----------------------------------------------------------------------------
+
+nph 0.9 - 2/22/00
+-------
+
+- changed ph_open() to allocate memory for the PH handle and set a pointer,
+  rather than filling in a caller-supplied buffer
+- changed ph_close() to check the response code to the "quit" command
+- cleaned up API for field list, server options, and siteinfo list
+- cleaned up value-parsing code and moved it from nph into libphclient
+  (see new ph_encode_selector() call)
+- fixed nph to set debugging hooks and validate "returnfields" option
+  after connecting to the PH server
+- changed readline code to redisplay input line after debugging output
+  (e.g., for completion of field names or server options)
+- added "-V" option to display nph version
+
+----------------------------------------------------------------------------
+
+nph 0.8 - 2/20/00
+-------
+
+- added manpages for libphclient API and nph client
+- replaced ph_field structure with ph_fieldselector (for queries) and
+  ph_fieldval (which includes the response code for returned entries)
+- added a generalized stack mechanism in PH handle to prevent memory leaks
+- replaced php and current_alias in PH handle with new struct ph_auth
+- added nph "confirmedits" option (and corresponding commandline option "-c")
+- added nph "returnfields" option to set default return fields
+- readline completion code now completes client options and server options
+  where appropriate
+- changed "edit" command to support "edit field alias"
+
+----------------------------------------------------------------------------
+
+nph 0.7 - 2/18/00
+-------
+
+- changed some variable names, function names, and paramter lists to
+  improve readability
+- added send and receive hook functions so applications can see everything
+  sent between the client and server
+- added library calls to determine resolved and advertised URLs for
+  PH-redirected www fields (actually added in 0.6, forgot to list below)
+- added "resolve_www" and "public_www" commands to nph
+- replaced "auth_method" command with generic "option" command which
+  can change any nph setting
+- nph commands can be redirected to a file or piped to a program with
+  ">", ">>", or "|"
+- "query", "me", and "status" commands are piped through the pager
+  by default
+- if compiled with readline support, nph commandline is redisplayed
+  after being suspended and foregrounded again
+- if compiled with readline support, command can be interrupted with SIGINT
+- added "make" command
+- expanded nph "whoami" command to display server and port
+
+----------------------------------------------------------------------------
+
+nph 0.6 - 2/14/00
+-------
+
+- changed several filenames to better reflect their content
+- moved current_alias field from nph code to PH structure in libphclient
+  and added ph_whoami() call to lib/auth.c
+- changed auth method plugins in lib/auth.c to use a static buffer from
+  the caller rather than dynamicly allocating memory
+- added ph_quote_value() in lib/protocol.c to convert a field value from
+  literal representation to a server-parsable quoted string
+- fixed nph client to use literal representation of field values internally
+- added "edit" and "me" commands
+- nph will now send a query from its commandline arguments, just like
+  the classic ph client
+- added/changed several commandline options to nph
+
+----------------------------------------------------------------------------
+
+nph 0.5 - 2/12/00
+-------
+
+- added whoami command
+- fixed parsing problem with trailing spaces
+- added bye, stop, and exit as synonyms for quit
+- added motd as a synonym for status
+- updated help information
+- added ph_passwd() library call and corresponding functionality in nph
+- added --enable-nph-setuid configure option
+- nph drops root privs after connecting to the PH server if installed setuid
+- changed ph_resolve_email() to ignore all but the first address listed
+  in the matching email field
+
+----------------------------------------------------------------------------
+
+nph 0.4 - 2/11/00
+-------
+
+- added readline and polling support to nph
+- added command and field completion
+- tweaked Makefiles to support CPPFLAGS
+- fixed to correctly parse quoted strings for field values
+
+----------------------------------------------------------------------------
+
+nph 0.3 - 2/10/00
+-------
+
+- modularized nph client code
+- added basic help facility to nph
+- added rudimentary ~/.nphrc support
+- decided not to encode key modification information in server mailmatches
+  field and modified ph_resolve_email() to just use builtin defaults
+- added argument to ph_resolve_email() to avoid memory leaks in applications
+  which use timeouts
+- changed ph_resolve_email() to properly handle a lookup which returns
+  only a single error field (e.g., when email field is not present)
+
+----------------------------------------------------------------------------
+
+nph 0.2 - 2/9/00
+-------
+
+- removed extraneous strsep() prototypes from library code
+- added phent argument to ph_email_address() in emailaddr.c to
+  avoid memory leak in applications which use timeouts
+- changed arguments of ph_resolve_email() so that server can indicate
+  how keys should be modified before a given field lookup
+
+----------------------------------------------------------------------------
+
+nph 0.1 - 2/7/00
+-------
+
+- Initial alpha release.
+

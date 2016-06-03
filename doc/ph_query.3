@@ -1,0 +1,49 @@
+.TH ph_query 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_query, ph_free_entries, ph_free_query \- retrieve data from a PH server
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_query(PH *" ph ", struct ph_fieldselector " query "[],"
+.BI "char *" retfields "[], ph_entry **" entries ");"
+.br
+.BI "int ph_free_entries(ph_entry *" entries ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_query\fP() function retrieves entries from the PH server
+associated with the \fBPH\fP handle \fIph\fP.  The \fIquery\fP argument
+selects which entries to return.  The \fIretfields\fP argument
+indicates which fields from the selected entries should be returned.
+The resulting entries are stored in dynamicly-allocated memory, and the
+\fIentries\fP argument is set to point to them.
+
+The \fIquery\fP argument is an array of structures which contain the
+following fields: \fIfield\fP (a string representation of the field name),
+\fIvalue\fP (a string representation of the value to check for), and
+\fIoperation\fP (a character value indicating how the field and value
+should be compared).  If \fIfield\fP is NULL, the \fIoperation\fP field
+is ignored and the value is matched against the default fields on the
+server.  The only universally-supported value for \fIoperation\fP is '=',
+but other possibilities include '~', '<', and '>'.
+
+The \fIretfields\fP argument is a NULL-terminated array of strings which
+lists the fields to return.  If \fIretfields\fP is NULL, the default
+set of fields is returned from the server.
+
+The \fBph_free_entries\fP() function is used to free memory allocated
+by \fBph_query\fP() for the \fIentries\fP argument.
+.SH RETURN VALUE
+On success, the \fBph_query\fP() function returns the number of entries
+which matched \fIquery\fP.  If the query matched too many entries for the
+server to return them, it returns \fIPH_ERR_TOOMANY\fP.  If no entries matched,
+it returns \fIPH_ERR_NOMATCH\fP.  If the query was invalid, it returns
+\fIPH_ERR_DATAERR\fP.  On error, it returns -1 and sets \fIerrno\fP.
+.SH ERRORS
+The \fBph_query\fP() function will fail with \fBEINVAL\fP if it receives
+an unexpected response code from the server.  In addition, it may fail
+with any error from the functions \fIread\fP() or \fIwrite\fP().
+.SH SEE ALSO
+.BR read (2),
+.BR write (2),
+.BR ph_open (3)

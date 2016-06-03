@@ -1,0 +1,66 @@
+.TH ph_open 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_open, ph_close \- manage PH server connections
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.B "typedef void (*ph_debug_func_t)(void *, char *);"
+.br
+.BI "int ph_open(PH **" ph ", char *" server ","
+.BI "int " flags ", ph_debug_func_t " sendhook ","
+.BI "ph_debug_func_t " recvhook ", void *" hook_data ");"
+.br
+.BI "int ph_close(PH *" ph ", int " flags ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_open\fP() function connects to the PH server specified by
+\fIserver\fP.  It allocates memory for a \fBPH\fP handle and
+sets the \fIph\fP argument to point to the allocated handle.  The handle
+can then be passed to other \fIlibphclient\fP calls to communicate with
+the server.
+
+The \fIflags\fP argument is a bitwise-or of zero or more of the following
+values:
+.IP \fBPH_OPEN_PRIVPORT\fP
+Use a reserved port for the local part of the connection.
+.IP \fBPH_OPEN_ROUNDROBIN\fP
+If \fIserver\fP is a round-robin DNS entry, try all IP addresses
+before giving up.
+.IP \fBPH_OPEN_LOCAL\fP
+Connect to a local process via a pipe, rather than to a remote network
+port.  If this flag is given, the \fBPH_OPEN_PRIVPORT\fP and
+\fBPH_OPEN_ROUNDROBIN\fP flags are ignored, the \fIserver\fP argument
+specifies a path to the PH server program on the local system.
+
+If \fBPH_OPEN_LOCAL\fP is not set, the \fIserver\fP argument specifies the
+hostname of the remote PH server.  It may optionally be suffixed with
+a ":" character followed by a numeric port number.
+.IP \fBPH_OPEN_DONTID\fP
+Do not send the library version string to the server upon connection.
+.PP
+The \fIsendhook\fP() and \fIrecvhook\fP() arguments are optional pointers
+to functions which allow the calling application to monitor the communication
+between \fBlibphclient\fP and the PH server.  See \fBph_set_sendhook\fP(3)
+for more information.
+
+The \fBph_close\fP() function closes the PH server connection and frees
+memory associated with \fIph\fP.  If \fIflags\fP is set to
+\fBPH_CLOSE_FAST\fP, the connection is closed without sending the
+PH "quit" command.
+.SH RETURN VALUE
+On successful completion, \fBph_open\fP() and \fBph_close\fP() will return
+0.  On failure, they will return -1 and set \fIerrno\fP to an
+appropriate value.
+.SH ERRORS
+The \fBph_open\fP() function may fail with any error from the functions
+\fIpipe\fP(), \fIclose\fP(), \fIdup2\fP(), \fIvfork()\fP, \fIexecl\fP(),
+\fIexeclp\fP(), \fIgethostbyname\fP(), \fIrresvport\fP(), \fIsocket\fP(),
+\fIconnect\fP(), or \fIcalloc\fP().
+
+The \fBph_close\fP() function may fail with any error from the functions
+\fIclose\fP() or \fIwrite\fP().
+.SH SEE ALSO
+.BR socket (2),
+.BR connect (2),
+.BR close (2)

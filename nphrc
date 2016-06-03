@@ -1,0 +1,9 @@
+#
+# nphrc - system-wide startup file for nph
+#
+
+# Examples:
+# option pager=/usr/local/bin/less
+# addserver ns.uiuc.edu "University of Illinois at Urbana-Champaign"
+
+status

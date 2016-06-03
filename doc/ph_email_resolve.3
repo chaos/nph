@@ -1,0 +1,56 @@
+.TH ph_email_resolve 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_email_resolve, ph_advertised_email \- determine PH-redirected email addresses
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_email_resolve(PH *" ph ", char *" user ","
+.BI "char *" fields ", char **" real_email ");"
+.br
+.BI "int ph_advertised_email(PH *" ph ", char *" alias ","
+.BI "int " confirm_alias ", char **" advertised_email ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_email_resolve\fP() function resolves the email address whose
+user portion is \fIuser\fP.  The \fIreal_email\fP argument is set to
+point to a dynamically-allocated string containing the resolved email
+address.  This memory must be later freed by the calling application.
+
+The \fIfields\fP argument is a string containing a space- or
+colon-delimited list of field names to match entries on.  If \fIfields\fP
+is \fBNULL\fP or points to an empty string, \fBph_email_resolve\fP() uses
+the field list specified by the server's \fImailmatches\fP \fBsiteinfo\fP
+field.  If the server doesn't support the \fImailmatches\fP field,
+\fBph_email_resolve\fP() falls back to the default list, which is
+"alias:callsign".
+
+The \fBph_email_resolve\fP() function returns the email address found in
+the field specified by the server's \fImailbox\fP \fBsiteinfo\fP field.
+This is typically set to \fIemail\fP, which means that the email address
+will be found in the user's \fIemail\fP field.
+
+The \fBph_advertised_email\fP() function determines the advertised
+email address for the user whose alias is \fIalias\fP.  If \fIconfirm_alias\fP
+is set, the entry for \fIalias\fP is looked up to make sure it exists.  The
+\fIadvertised_email\fP argument is set to point to a dynamically-allocated
+string containing the advertised email address.  This memory must later
+be freed by the calling application.
+.SH RETURN VALUE
+These functions return 0 on success, \fIPH_ERR_NOMATCH\fP if a single matching
+entry cannot be found, and \fIPH_ERR_DATAERR\fP if the query is invalid.
+On error, they return -1 and set \fIerrno\fP.
+
+In addition, \fBph_email_resolve\fP() returns \fIPH_ERR_DATAERR\fP if a single
+matching entry is found but contains no \fIemail\fP field.
+.SH ERRORS
+These functions will fail with \fBEINVAL\fP if the server does
+not support the \fImailbox\fP or \fImailfield\fP siteinfo entries,
+or if they receive an unexpected response code from the server.
+In addition, they may fail with any error from the functions \fIread\fP()
+or \fIwrite\fP().
+.SH SEE ALSO
+.BR read (2),
+.BR write (2),
+.BR ph_open (3),
+.BR ph_siteinfo (3)

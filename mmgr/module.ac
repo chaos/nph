@@ -1,0 +1,17 @@
+AC_DEFUN(subdir[_INIT], [
+  AC_REQUIRE([AC_HEADER_STDC])
+
+  if test -z "$2"; then
+    MMGR_PREFIX="${PACKAGE_NAME}";
+  else
+    MMGR_PREFIX="$2";
+  fi
+  AC_SUBST([MMGR_PREFIX])
+
+  MMGR_DIR="$1";
+  AC_SUBST([MMGR_DIR])
+
+  AC_CONFIG_FILES([$1/${MMGR_PREFIX}_mmgr.h:$1/mmgr.h.in])
+  AC_CONFIG_FILES([$1/${MMGR_PREFIX}_mmgr.c:$1/mmgr.c.in])
+])
+

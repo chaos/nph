@@ -1,0 +1,36 @@
+libphclient
+-----------
+* establish better conventions for returning error codes:
+  * goal is to not have to create a new PH_ERR_* macro for each new situation
+  * one possibility: if response code is other than LR_OK, return negative
+    value of the response code
+    (i.e., anything less than 0 is an error)
+  * can provide a ph_strerror() function to front-end any negative
+    return value
+    (i.e., use strerror() if -1, otherwise use internal sys_errlist[] table)
+* code cleanup:
+  * add ph_dequote_value() to public API ???
+  * check return values from strl*() functions
+* API cleanup:
+  * hide structures behind additional functions where possible
+    (e.g., ph_next_entry(), ph_next_field(), etc)
+* add phclient-config script for apps using -lphclient?
+  (maybe include a flag to tell if it's thread-safe)
+* add intelligent data caching mechanism
+* provide perl module interface to libphclient
+
+nph
+---
+* fix error message when ph_server file is empty:
+	nph: fgets(): Error 0
+* add ability to set default query selectors
+* curses interface?  X interface?
+* use editor to modify entire entry ???
+* add auto-login capability ???
+* enhance history (~/.ph_history, "!foo", etc) ???
+* add close and open commands ???
+* allow "change [selectors] add field=val" (to add "val" to whatever's
+  already listed in field) ???
+* allow command to be executed conditionally based on whether we were
+  invoked in interactive mode
+

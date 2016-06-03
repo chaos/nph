@@ -1,0 +1,37 @@
+/* @configure_input@ */
+
+/*
+**  Copyright 1998-2004 University of Illinois Board of Trustees
+**  Copyright 1998-2004 Mark D. Roth
+**  All rights reserved.
+**
+**  @BUFFER_PREFIX@_buffer.h - header file for buffer module
+**
+**  Mark D. Roth <roth@uiuc.edu>
+**  Campus Information Technologies and Educational Services
+**  University of Illinois at Urbana-Champaign
+*/
+
+#ifndef @BUFFER_PREFIX@_BUFFER_H
+#define @BUFFER_PREFIX@_BUFFER_H
+
+#include <sys/types.h>
+
+
+typedef struct @BUFFER_PREFIX@_buffer *@BUFFER_PREFIX@_buffer_t;
+
+typedef ssize_t (*@BUFFER_PREFIX@_read_func_t)(void *, char *, size_t);
+
+
+int @BUFFER_PREFIX@_buffer_new(@BUFFER_PREFIX@_buffer_t *,
+			       size_t,
+			       @BUFFER_PREFIX@_read_func_t,
+			       void *);
+
+ssize_t @BUFFER_PREFIX@_buffer_read_line(@BUFFER_PREFIX@_buffer_t,
+					 char *, size_t);
+
+void @BUFFER_PREFIX@_free(@BUFFER_PREFIX@_buffer_t);
+
+#endif /* ! @BUFFER_PREFIX@_BUFFER_H */
+

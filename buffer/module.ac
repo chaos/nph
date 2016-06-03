@@ -1,0 +1,18 @@
+AC_DEFUN(subdir[_INIT], [
+  AC_REQUIRE([COMPAT_FUNC_STRLCPY])
+  AC_REQUIRE([COMPAT_FUNC_STRSEP])
+
+  if test -z "$2"; then
+    BUFFER_PREFIX="${PACKAGE_NAME}";
+  else
+    BUFFER_PREFIX="$2";
+  fi
+  AC_SUBST([BUFFER_PREFIX])
+
+  BUFFER_DIR="$1";
+  AC_SUBST([BUFFER_DIR])
+
+  AC_CONFIG_FILES([$1/${BUFFER_PREFIX}_buffer.h:$1/buffer.h.in])
+  AC_CONFIG_FILES([$1/${BUFFER_PREFIX}_buffer.c:$1/buffer.c.in])
+])
+

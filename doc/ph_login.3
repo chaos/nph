@@ -1,0 +1,85 @@
+.TH ph_login 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_login, ph_logout, ph_suser \- PH server authentication routines
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_login(PH *" ph ", char *" alias ","
+.BI "int " authtype ", void *" auth ");"
+.br
+.BI "int ph_logout(PH *" ph ");"
+.br
+.BI "int ph_suser(PH *" ph ", char *" alias ");"
+.br
+.BI "int ph_passwd(PH *" ph ", char *" newpass ");"
+.br
+.BI "char *ph_whoami(PH *" ph ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_login\fP() function authenticates the user \fIalias\fP to the
+PH server associated with the \fBPH\fP handle \fIph\fP.  The \fIauthtype\fP
+argument must be set to one of the following values:
+.IP \fBPH_AUTH_EMAIL\fP
+Email authentication.  If the connection was established using the
+\fBPH_OPEN_PRIVPORT\fP flag to \fBph_open\fP(), the user will be authenticated
+if the local username and hostname match the value of the user's \fIemail\fP
+field on the PH server.  The \fIauth\fP argument is ignored.
+.IP \fBPH_AUTH_PASSWORD\fP
+Encrypted password authentication.  The \fIauth\fP argument is the user's
+password.
+.IP \fBPH_AUTH_CLEAR\fP
+Cleartext password authentication.  Use of this authentication method is
+not recommended, since it is inherently insecure.  The \fIauth\fP argument
+is the user's password.
+.PP
+The \fBph_logout\fP() function logs the currently logged-in user out of the
+PH server.  The session goes back to being an unpriveledged, anonymous
+session.
+
+The \fBph_suser\fP() function allows a PH hero to assume the identity of
+any arbitrary user without hero priveledges.  The \fIalias\fP argument
+indicates the user whose priveledges should be assumed.
+
+The \fBph_passwd\fP() function changes the password of the currently
+logged-in user.  The \fInewpass\fP argument is the new password.
+
+The \fBph_whoami\fP() function returns the name of the currently
+logged-in user, or NULL if no user is logged in.
+.SH RETURN VALUE
+On successful completion, \fBph_login\fP() returns 0.  If authentication
+is denied by the server, it returns \fIPH_ERR_NOTLOG\fP.  On failure, it
+returns -1 and sets \fIerrno\fP to an appropriate value.
+
+On successful completion, \fBph_logout\fP() returns 0.  If no user is
+logged in, it returns \fIPH_ERR_NOTLOG\fP.  On other errors, it returns -1
+and sets \fIerrno\fP to an appropriate value.
+
+The \fBph_suser\fP() function returns 0 on success, \fIPH_ERR_NOTHERO\fP
+if the calling user is not a PH hero, or \fIPH_ERR_NOTLOG\fP if no user
+is logged in.  On failure, it returns -1 and sets \fIerrno\fP to an
+appropriate value.
+
+The \fBph_passwd\fP() function returns 0 on success, or \fIPH_ERR_NOTLOG\fP
+if no user is logged in.  It can also fail with the same values returned
+by \fBph_change\fP(3).  On failure, it returns -1 and sets \fIerrno\fP.
+.SH ERRORS
+The functions described here may fail with any error from the functions
+\fIread\fP() or \fIwrite\fP().
+
+The \fBph_login\fP() function will return the following errors:
+.IP \fBEINVAL\fP
+The \fIauthtype\fP is invalid.
+.IP \fBEINVAL\fP
+Invalid data is read from the server.
+.IP \fBEAGAIN\fP
+The server responds with a temporary failure.
+.PP
+In addition, \fBph_login\fP() may fail with any error from the functions
+\fIgetpwuid\fP() or \fImalloc\fP().
+.SH SEE ALSO
+.BR read (2),
+.BR write (2),
+.BR getpwuid (3),
+.BR ph_open (3),
+.BR ph_change (3)

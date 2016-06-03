@@ -1,0 +1,158 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define to number of arguments for gethostbyname_r */
+#undef GETHOSTBYNAME_R_NUM_ARGS
+
+/* Define to number of arguments for getservbyname_r */
+#undef GETSERVBYNAME_R_NUM_ARGS
+
+/* Define to 1 if you have the <arpa/aixrcmds.h> header file. */
+#undef HAVE_ARPA_AIXRCMDS_H
+
+/* Define to 1 if you have the <crypt.h> header file. */
+#undef HAVE_CRYPT_H
+
+/* Define if you have the gethostbyname_r function */
+#undef HAVE_GETHOSTBYNAME_R
+
+/* Define if your system has a POSIX-compliant getpwuid_r */
+#undef HAVE_GETPWUID_R
+
+/* Define if you have the getservbyname_r function */
+#undef HAVE_GETSERVBYNAME_R
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `crypt' library (-lcrypt). */
+#undef HAVE_LIBCRYPT
+
+/* Define to 1 if you have the `nsl' library (-lnsl). */
+#undef HAVE_LIBNSL
+
+/* Define to 1 if you have the `readline' library (-lreadline). */
+#undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the `socket' library (-lsocket). */
+#undef HAVE_LIBSOCKET
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <paths.h> header file. */
+#undef HAVE_PATHS_H
+
+/* Define to 1 if you have the `poll' function. */
+#undef HAVE_POLL
+
+/* Define to 1 if you have the <readline/history.h> header file. */
+#undef HAVE_READLINE_HISTORY_H
+
+/* Define to 1 if you have the <readline/readline.h> header file. */
+#undef HAVE_READLINE_READLINE_H
+
+/* Define to 1 if you have the `sigaction' function. */
+#undef HAVE_SIGACTION
+
+/* Define if your system has a working snprintf */
+#undef HAVE_SNPRINTF
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define if you have the strdup function */
+#undef HAVE_STRDUP
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define if you have the strlcat function */
+#undef HAVE_STRLCAT
+
+/* Define if you have the strlcpy function */
+#undef HAVE_STRLCPY
+
+/* Define if you have the strsep function */
+#undef HAVE_STRSEP
+
+/* Define to 1 if you have the <sys/poll.h> header file. */
+#undef HAVE_SYS_POLL_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Path to more. */
+#undef MORE
+
+/* Define if you want to use the gethostbyname_r function */
+#undef NEED_GETHOSTBYNAME_R
+
+/* Define if you want to use the getservbyname_r function */
+#undef NEED_GETSERVBYNAME_R
+
+/* Define if you want to use the snprintf function */
+#undef NEED_SNPRINTF
+
+/* Define if you want to use the strdup function */
+#undef NEED_STRDUP
+
+/* Define if you want to use the strlcat function */
+#undef NEED_STRLCAT
+
+/* Define if you want to use the strlcpy function */
+#undef NEED_STRLCPY
+
+/* Define if you want to use the strsep function */
+#undef NEED_STRSEP
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Default mailmatch fields */
+#undef PH_DEFAULT_MAILMATCHES
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Path to vi. */
+#undef VI
+
+/* Define to 1 if on AIX 3.
+   System headers sometimes define this.
+   We just want to avoid a redefinition error message.  */
+#ifndef _ALL_SOURCE
+# undef _ALL_SOURCE
+#endif
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+#undef size_t

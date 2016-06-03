@@ -1,0 +1,120 @@
+# @configure_input@
+
+### Path settings
+srcdir		= @srcdir@
+top_srcdir	= @top_srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+mandir		= @mandir@
+
+PACKAGE_NAME	= @PACKAGE_NAME@
+PACKAGE_VERSION	= @PACKAGE_VERSION@
+
+@ENCAP_DEFS@
+
+### Installation programs and flags
+INSTALL		= @INSTALL@
+INSTALL_DATA	= @INSTALL_DATA@
+LN_S		= @LN_S@
+MKDIR		= @MKDIR@
+@SET_MAKE@
+
+
+### Makefile rules - no user-servicable parts below
+
+PH_OPEN_SO		= ph_close
+PH_LOGIN_SO		= ph_logout \
+			  ph_suser \
+			  ph_passwd \
+			  ph_whoami
+PH_CHANGE_SO		= ph_add \
+			  ph_delete
+PH_GET_FIELDINFO_SO	= ph_retrieve_fieldinfo \
+			  ph_decode_field_attributes \
+			  ph_fieldinfo_iterate
+PH_ID_SO		= ph_status ph_external
+PH_GET_OPTION_SO	= ph_retrieve_options \
+			  ph_set_option ph_option_iterate
+PH_GET_SITEINFO_SO	= ph_retrieve_siteinfo \
+			  ph_siteinfo_iterate
+PH_QUERY_SO		= ph_free_entries
+PH_RFD_SO		= ph_wfd
+PH_EMAIL_RESOLVE_SO	= ph_advertised_email
+PH_WWW_RESOLVE_SO	= ph_advertised_www
+PH_SET_SENDHOOK_SO	= ph_set_recvhook \
+			  ph_set_hookdata
+PH_ENCODE_SELECTOR_SO	= ph_free_selectors
+PH_SERVERLIST_ADD_SO	= ph_serverlist_iterate \
+			  ph_serverlist_merge \
+			  ph_free_serverlist
+
+all:
+
+.PHONY: clean distclean install
+
+clean:
+
+distclean: clean
+	rm -f Makefile
+
+install:
+	${MKDIR} ${DESTDIR}${mandir}/man1
+	${INSTALL_DATA} ${srcdir}/nph.1 ${DESTDIR}${mandir}/man1
+	${MKDIR} ${DESTDIR}${mandir}/man3
+	${INSTALL_DATA} ${srcdir}/ph_open.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_OPEN_SO}; do \
+		echo ".so man3/ph_open.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_login.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_LOGIN_SO}; do \
+		echo ".so man3/ph_login.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_change.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_CHANGE_SO}; do \
+		echo ".so man3/ph_change.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_get_fieldinfo.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_GET_FIELDINFO_SO}; do \
+		echo ".so man3/ph_get_fieldinfo.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_id.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_ID_SO}; do \
+		echo ".so man3/ph_id.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_get_option.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_GET_OPTION_SO}; do \
+		echo ".so man3/ph_get_option.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_get_siteinfo.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_GET_SITEINFO_SO}; do \
+		echo ".so man3/ph_get_siteinfo.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_query.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_QUERY_SO}; do \
+		echo ".so man3/ph_query.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_rfd.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_RFD_SO}; do \
+		echo ".so man3/ph_rfd.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_email_resolve.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_EMAIL_RESOLVE_SO}; do \
+		echo ".so man3/ph_email_resolve.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_www_resolve.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_WWW_RESOLVE_SO}; do \
+		echo ".so man3/ph_www_resolve.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_set_sendhook.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_SET_SENDHOOK_SO}; do \
+		echo ".so man3/ph_set_sendhook.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_encode_selector.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_ENCODE_SELECTOR_SO}; do \
+		echo ".so man3/ph_encode_selector.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+	${INSTALL_DATA} ${srcdir}/ph_serverlist_add.3 ${DESTDIR}${mandir}/man3
+	for i in ${PH_SERVERLIST_ADD_SO}; do \
+		echo ".so man3/ph_serverlist_add.3" > ${DESTDIR}${mandir}/man3/$${i}.3; \
+	done
+

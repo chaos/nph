@@ -1,0 +1,375 @@
+.TH nph 1 "Oct 2002" "University of Illinois" "Directory Services"
+.SH NAME
+nph \- new PH client
+.SH SYNOPSIS
+\fBnph [options] [selectors [return field1 ...] [@domain]]\fP
+.br
+\fBnph [options]\fP
+.SH VERSION
+This man page documents version 1.2 of \fBnph\fP.
+.SH DESCRIPTION
+\fBnph\fP is a new PH client.  It uses the \fIlibphclient\fP API and
+contains a number of new features and usability improvements over the
+old PH client.
+.SH STARTUP
+If \fBnph\fP is invoked with non-option arguments, they are interpreted
+as a query command.  \fBnph\fP will perform the query and exit immediately.
+Otherwise, \fBnph\fP will start up in interactive mode and accept commands
+from \fIstdin\fP.
+
+To determine what PH server to connect to, \fBnph\fP looks in three places.
+If the \fI-s\fP commandline option (described below) is given, the
+specified server is used.  Otherwise, if the \fIPH_SERVER\fP environment
+variable is set, its value is used.  Finally, if neither of the previous
+sources specify a server, the file \fI/etc/ph_server\fP is
+read if it exists.  If no server is found, \fBnph\fP will not start.
+
+Once a server is selected, \fBnph\fP then searches for a startup
+file containing a list of commands to be automatically executed.
+If the \fI-f\fP commandline option (described below) is given, it
+specifies the name of the startup file to use.  Otherwise, it looks
+for the file \fI${HOME}/.nphrc.server\fP, where \fIserver\fP is the
+name of the selected server.  If that file does not exist, it looks for
+\fI${HOME}/.nphrc\fP.  Lastly, if neither of the previous files exist,
+it reads \fI/etc/nphrc\fP.
+.SH COMMANDLINE OPTIONS
+.TP
+.B -c
+Enable "confirmedits" option (see below).
+.TP
+.B -C
+Do not read the system-wide \fInphrc\fP or the user's \fI${HOME}/.nphrc\fB
+file.
+.TP
+.B -d
+Enable "debug" option (see below).
+.TP
+.B -f rcfile
+Tells \fBnph\fP to use \fIrcfile\fP as the startup file.
+.TP
+.B -F "field1 field2 ..."
+Set the "returnfields" option to "field1 field2 ..." (see below).
+.TP
+.B -m
+Disable the "usepager" option (see below).
+.TP
+.B -r
+Disable the "canonicaladdrs" option (see below).
+.TP
+.B -R
+Use a reserved port on the local end of the connection.  (This will only
+succeed if \fBnph\fP is running as \fBroot\fP.)
+.TP
+.B -s server[:port]
+Specify which PH server (and optionally, what port) to connect to.  If
+the port is not given, the port corresponding to the \fIcsnet-ns\fP service
+is used (usually port 105).
+.SH INTERACTIVE MODE
+The following commands are supported in interactive mode:
+.TP
+.B id text
+Identify yourself for the PH server's logs.  Users do not normally need
+to use this command.
+.TP
+.B external
+Mark the session as external, or non-local.  This prevents the user from
+accessing fields marked with the \fILocalPub\fP attribute.
+.TP
+.B suser alias
+Assume the privileges of \fIalias\fP.  Only heros may execute this command.
+.TP
+.B login alias
+Log in to the server as user \fIalias\fP.  The \fIlogin\fP command uses
+the authentication mechanism indicated by the \fIauthtype\fP option.
+.TP
+.B logout
+Log out of the PH server.
+.TP
+.B passwd
+Change the password of the currently logged-in user.
+.TP
+.B password
+Synonym for \fIpasswd\fP.
+.TP
+.B option [option=value]
+With no arguments, displays the current value of all client-side options.
+If arguments are given, the \fIoption\fP command sets the given option to
+the given value.  See below for more information on options.
+.TP
+.B switch
+Synonym for \fIoption\fP.
+.TP
+.B source file
+Read and executes commands from \fIfile\fP.
+.TP
+.B .
+Synonym for \fIsource\fP.
+.TP
+.B <
+Synonym for \fIsource\fP.
+.TP
+.B help [command]
+Displays a one-line help message for \fIcommand\fP.  If no arguments are given,
+the \fIhelp\fP command displays information for all valid commands.
+.TP
+.B ?
+Synonym for \fIhelp\fP.
+.TP
+.B quit
+Disconnect from the PH server and exit \fInph\fP.
+.TP
+.B bye
+Synonym for \fIquit\fP.
+.TP
+.B exit
+Synonym for \fIquit\fP.
+.TP
+.B stop
+Synonym for \fIquit\fP.
+.TP
+.B whoami
+Displays the currently logged-in username, plus the name of the server.
+.TP
+.B status
+Prints the PH server's status information.
+.TP
+.B motd
+Synonym for \fIstatus\fP.
+.TP
+.B set [option[=value]]
+Without arguments, displays the current value of all server-side options.
+With arguments, it sets the value of the given option.  If the value is
+not specified, the default value is "on".
+.TP
+.B siteinfo
+Displays the site-specific configuration list from the PH server.
+.TP
+.B connect host[:port]
+Connects to the specified server and disconnects from the currently-connected
+server.
+.TP
+.B serveradd server [site]
+Adds a server and corresponding site name to the list of known PH servers.
+.TP
+.B listservers [domain]
+Displays the list of known PH servers.  If \fIdomain\fP is listed,
+only servers in that domain will be displayed.  \fIdomain\fP must be
+composed of at least two '.'-delimited portions of the server name
+to search for (e.g., "uiuc.edu" instead of "edu").
+.TP
+.B fields [field]
+Displays information about the fields supported by the server.  Without
+arguments, it displays all supported fields.  With arguments, it displays
+only the listed fields.
+.TP
+.B edit field [alias]
+Edit the named field using the external editor specified by the
+\fIeditor\fP client option.  The user must be logged in before using
+this command.
+
+If \fIalias\fP is given, edit the field from the entry for \fIalias\fP;
+otherwise, edit the field from the logged-in user's entry.  To edit
+a field from some entry other than that of the logged-in user, the
+logged-in user must either have hero privileges or must be allowed to
+edit the specified entry by proxy.
+.TP
+.B query selectors... [return fields...] [@domain]
+Retrieve entries from the PH server.  The \fIselectors\fP specify the
+entries to retrieve (as described in \fISELECTING ENTRIES\fP below).
+
+The optional \fIreturn\fP clause specifies which fields of the matching
+entries should be returned.  If no \fIreturn\fP clause is given and the
+\fIreturnfields\fP option is unset, only fields marked with the
+\fIDefault\fP attribute will be returned by the server.
+
+If the \fI@domain\fP argument is given, \fBnph\fP will attempt to find
+the PH server for the specified domain.  If found, the query will be
+sent to that server, rather than the current server.  Once the query is
+complete, the connection to the original server will be resumed without
+interruption.
+.TP
+.B change selectors... make|force assignments...
+Change entries on the server.  The user must be logged in before using
+this command and must have permission to change the selected entry or
+entries.  The \fIselectors\fP specify the entries to which the changes
+should be applied.  The \fIassignments\fP specify the changes to apply
+to all matching entries.
+
+The \fIforce\fP keyword allows the user to make a non-encrypted change
+to fields marked with the \fIEncrypt\fP keyword.  Otherwise, all
+changes will normally use the \fImake\fP keyword instead.
+.TP
+.B make assignments...
+This is a short form of the \fIchange\fP command which operates on the
+entry of the logged-in user.
+.TP
+.B delete selectors...
+Delete entries.  The user must be logged in and have hero privileges in
+order to perform this operation.
+.TP
+.B add assignments...
+Adds an entry with the data given in \fIassignments\fP.  The user must be
+logged in and have hero privileges in order to perform this operation.
+.TP
+.B me
+A short form of the \fIquery\fP command which displays all fields of the
+currently logged-in user's entry.
+.TP
+.B resolve_email user
+Returns the PH-resolved email address for \fIuser\fP.
+.TP
+.B public_email alias
+Returns the advertised email address for \fIalias\fP.
+.TP
+.B resolve_www user
+Returns the PH-resolved URL for \fIuser\fP.
+.TP
+.B public_www alias
+Returns the advertised URL for \fIalias\fP.
+.SH SELECTING ENTRIES
+The \fIquery\fP, \fIchange\fP, and \fIdelete\fP commands select the entries
+which they operate on based on \fIselectors\fP.  The selectors are
+a list of one or more criteria which are used by the server to select
+entries.  When multiple selectors are listed, only entries which
+match all of the selectors will be selected.
+
+Each selector is composed of a value, preceded by an optional field
+and operator.  If the field and operator are given, the selector matches
+entries whose data for the given field matches the given value.  If no
+field and operator are given, the default fields are checked, which are
+usually "name" and "nickname".  The only universally understood operator
+is '=', but some servers support '~', '<', and '>'.
+
+Certain special symbols, called "wildcard" characters, can be used in
+the value if the exact spelling is unknown.   The '*' character is used in
+place of zero or more characters, the '+' character in place of one or more
+unknown characters, and the '?' character can be used when exactly one
+character is unknown.  In addition, if the unknown character can be one
+of a limited set this can be specified by surrounding the set with
+brackets, e.g., [ei] means that in that place an 'e' or an 'i' would match.
+
+Here are a few examples of selectors:
+.TP
+.B alias=smith
+Select entries whose \fIalias\fP field is set to \fIsmith\fP.
+.TP
+.B john smith
+Select entries whose \fIname\fP or \fInickname\fP fields match \fIjohn\fP
+and \fIsmith\fP.
+.TP
+.B alias=smi* name=john
+Select entries whose \fIalias\fP field starts with \fIsmi\fP and whose
+\fIname\fP or \fInickname\fP fields contain \fIjohn\fP.
+.PP
+Many servers apply limits on computation time and or on the number of
+entries returned, to prevent mailing list generation and/or to minimize
+performance problems.  Therefore, it is often advisable to be as specific
+as possible in identifying an entry.
+.SH ASSIGNING VALUES
+The \fIchange\fP, \fImake\fP, and \fIadd\fP commands set specific fields
+to specific values on the server based on a list of one or more
+\fIassignments\fP.  All of the listed assignments are performed on
+all of the selected entries.
+
+Each assignment is composed of a field name, the '=' character, and a
+value.  This syntax is similar to the \fIselector\fP syntax, but it is
+somewhat more rigid.  Assignments cannot omit the field name, cannot
+use operators other then '=', and cannot use wildcard characters.
+
+Here are a few examples of assignments:
+.TP
+.B email=j-smith@students.uiuc.edu
+Sets the \fIemail\fP field to \fIj-smith@students.uiuc.edu\fP.
+.TP
+.B www=http://www.students.uiuc.edu/~j-smith/
+Sets the \fIwww\fP field to \fIhttp://www.students.uiuc.edu/~j-smith/\fP.
+.SH CLIENT OPTIONS
+Client options are settable using the \fIoption\fP command described
+above.  The following client options are supported.  The default value
+is listed in parenthesis next to each option.
+.TP
+.B authtype (password)
+Defines the authentication mechanism used to login to the PH server.
+Supported mechanisms are \fIpassword\fP, \fIemail\fP, and \fIclear\fP.
+(The \fIclear\fP method is not recommended because it is inherently
+insecure.)
+.TP
+.B confirmedits (off)
+This is a boolean option.  If on, \fBnph\fP will ask for confirmation
+before applying the change during an \fIedit\fP command.
+.TP
+.B debug (off)
+This is a boolean option.  If on, all communication between the client
+and server will be displayed.
+.TP
+.B defaultfield (not set by default)
+Defines the default field for field selectors which do not specify a field.
+If unset, the default field configured on the server is used (usually
+\fIname\fP and \fInickname\fP).
+.TP
+.B editor ($EDITOR)
+Defines the editor to use for \fIedit\fP commands.  If the first character
+is a '$', the value is obtained from the named environment variable.
+.TP
+.B pager ($PAGER)
+Defines an external pager program (such as \fImore\fP or \fIless\fP) to
+use for \fIquery\fP, \fIme\fP, \fIfields\fP, and \fIstatus\fP commands.
+If the first character is a '$', the value is obtained from the named
+environment variable.
+.TP
+.B returnfields (not set by default)
+Set the list of fields which are returned for queries which do not
+have a \fIreturn\fP clause.  For multiple fields, specify a quoted
+string of space-delimited field names.  If this option is not set and no
+\fIreturn\fP clause is given, only fields marked with the \fIDefault\fP
+attribute are returned by the server.
+.TP
+.B server (none)
+Defines which PH server (and optionally, which port) to connect to.
+Changing this setting will imediately disconnect from the current server and
+connect to the newly-specified server.
+.TP
+.B canonicaladdrs (off)
+This is a boolean option.  If on, advertised addresses are printed for the
+\fIemail\fP and \fIwww\fP fields instead of the actual values.
+.TP
+.B usepager (on)
+This is a boolean option.  If on, the pager specified by the \fIpager\fP
+option will be used for the \fIquery\fP, \fIme\fP, \fIfields\fP, and
+\fIstatus\fP commands.  Otherwise, the output of these commands will be
+sent to \fIstdout\fP.
+.TP
+.B usereservedport (off)
+Connect to the PH server from a port below 1024.  This is necessary in
+order to use the \fIemail\fP authentication method (described above).
+However, \fBnph\fP must be running as \fIroot\fP in order to do this,
+which is not recommended.
+.SH STARTUP FILES
+On startup, \fBnph\fP will first read the \fI/etc/nphrc\fP file,
+and then the invoking user's \fI${HOME}/.nphrc\fP file.  These files can
+be used to set defaults for \fBnph\fP options.  The file must consist of
+assignments of the form \fIoption=value\fP, one per line.  Blank lines
+are ignored, as is any text on the same line following a '#' character.
+
+\fBnph\fP will also read the \fI/etc/ph_server\fP file at
+startup for a default list of known PH servers at different sites.
+.SH REDIRECTING OUTPUT
+The standard shell expressions ">", ">>", and "|" can be used at the end of
+any \fBnph\fP command to redirect the output to a file or program.  If the
+output of a \fIquery\fP, \fIme\fP, \fIfields\fP, or \fIstatus\fP command
+is redirected, it is not piped to the pager regardless of the setting of the
+\fIusepager\fP option.
+.SH FILES
+\fI/etc/nphrc\fP
+.br
+\fI/etc/ph_server\fP
+.br
+\fI${HOME}/.nphrc\fP
+.br
+\fI${HOME}/.nphrc.*\fP
+.SH SEE ALSO
+\fBph_open\fP(3)
+.br
+The \fBnph\fP Homepage (\fIhttp://www.feep.net/nph/\fP)
+.SH AUTHOR
+Mark D. Roth <roth@feep.net>

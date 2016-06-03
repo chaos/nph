@@ -1,0 +1,90 @@
+# @configure_input@
+
+### Path settings
+srcdir		= @srcdir@
+top_srcdir	= @top_srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+mandir		= @mandir@
+sysconfdir	= @sysconfdir@
+
+PACKAGE_NAME	= @PACKAGE_NAME@
+PACKAGE_VERSION	= @PACKAGE_VERSION@
+
+@ENCAP_DEFS@
+
+### Installation programs and flags
+INSTALL		= @INSTALL@
+INSTALL_PROGRAM	= @INSTALL_PROGRAM@ -s
+NPH_MODE	= @NPH_MODE@
+INSTALL_DATA	= @INSTALL_DATA@
+LN_S		= @LN_S@
+MKDIR		= @MKDIR@
+MORE		= @MORE@
+VI		= @VI@
+
+### Compiler and link options
+CC		= @CC@
+CPPFLAGS	= -I.. \
+		  -I${srcdir} \
+		  -I${top_srcdir}/lib \
+		  -I${top_srcdir}/compat \
+		  @CPPFLAGS@
+CFLAGS		= @CFLAGS@
+LDFLAGS		= @LDFLAGS@
+LIBS		= @LIBS@
+RANLIB		= @RANLIB@
+@SET_MAKE@
+VPATH		= @srcdir@
+
+
+### Makefile rules - no user-servicable parts below
+
+NPH_OBJS	= commands.o \
+		  conf.o \
+		  content.o \
+		  edit.o \
+		  init.o \
+		  interactive.o \
+		  login.o \
+		  nph.o \
+		  output.o \
+		  serverinfo.o \
+		  sighandler.o
+NPH_HDRS	= ../config.h \
+		  ${srcdir}/nph.h \
+		  ${top_srcdir}/lib/phclient.h \
+		  ${top_srcdir}/compat/compat.h
+NPH_LIBS	= ../lib/libphclient.a
+ALL		= nph
+
+INIT_DEFS	= -DSYSTEM_NPHRC=\"${sysconfdir}/nphrc\" \
+		  -DSERVER_FILE=\"${sysconfdir}/ph_server\"
+
+
+all: ${ALL}
+
+.PHONY: clean distclean install
+
+nph: ${NPH_OBJS} ${NPH_LIBS}
+	${CC} ${CFLAGS} ${LDFLAGS} -o nph ${NPH_OBJS} ${NPH_LIBS} ${LIBS}
+
+${NPH_OBJS}: ${NPH_HDRS}
+
+.c.o:
+	${CC} ${CFLAGS} ${CPPFLAGS} -c -o $@ $<
+
+init.o: ${srcdir}/init.c ${NPH_HDRS}
+	${CC} ${CFLAGS} ${CPPFLAGS} ${INIT_DEFS} -c -o $@ $<
+
+clean:
+	rm -f *~ *.o ${ALL} core
+
+distclean: clean
+	rm -f Makefile
+
+install: all
+	${MKDIR} ${DESTDIR}${bindir}
+	${INSTALL_PROGRAM} -m ${NPH_MODE} nph ${DESTDIR}${bindir}
+

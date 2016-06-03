@@ -1,0 +1,43 @@
+.TH ph_www_resolve 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_www_resolve, ph_advertised_www \- determine PH-redirected www addresses
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_www_resolve(PH *" ph ", char *" user ","
+.BI "char **" real_url ");"
+.br
+.BI "int ph_advertised_www(PH *" ph ", char *" alias ","
+.BI "int " confirm_alias ", char **" advertised_url ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_www_resolve\fP() function resolves the URL for the
+user \fIuser\fP.  The \fIreal_www\fP argument is set to point to a
+dynamically-allocated string containing the resolved URL.  This memory
+must be later freed by the calling application.
+
+The \fBph_advertised_www\fP() function determines the advertised URL for
+the user whose alias is \fIalias\fP.  If \fIconfirm_alias\fP is set,
+the entry for \fIalias\fP is looked up to make sure it exists.  The
+\fIadvertised_www\fP argument is set to point to a dynamically-allocated
+string containing the advertised URL.  This memory must later be freed
+by the calling application.
+
+If the server does not support the \fIwwwredirect\fP siteinfo field, the
+\fBph_advertised_www\fP() function will return the same URL as the
+\fBph_www_resolve\fP() function.
+.SH RETURN VALUE
+These functions return 0 on success, \fIPH_ERR_NOMATCH\fP if a single matching
+entry cannot be found, and \fIPH_ERR_DATAERR\fP if the query is invalid or if
+a single matching entry is found but does not contain a \fIwww\fP field.
+On error, they return -1 and set \fIerrno\fP.
+.SH ERRORS
+These functions will fail with \fBEINVAL\fP if they receive an unexpected
+response code from the server.  In addition, they may fail with any
+error from the functions \fIread\fP() or \fIwrite\fP().
+.SH SEE ALSO
+.BR read (2),
+.BR write (2),
+.BR ph_open (3),
+.BR ph_siteinfo (3)

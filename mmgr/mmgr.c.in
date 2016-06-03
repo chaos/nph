@@ -1,0 +1,268 @@
+/* @configure_input@ */
+
+/*
+**  Copyright 2000-2004 University of Illinois Board of Trustees
+**  Copyright 2000-2004 Mark D. Roth
+**  All rights reserved.
+**
+**  @MMGR_PREFIX@_mmgr.c - memory management code
+**
+**  Mark D. Roth <roth@uiuc.edu>
+**  Campus Information Technologies and Educational Services
+**  University of Illinois at Urbana-Champaign
+*/
+
+#include <config.h>
+#include <compat.h>
+
+#include <@MMGR_PREFIX@_mmgr.h>
+
+#include <errno.h>
+
+#ifdef STDC_HEADERS
+# include <stdlib.h>
+#endif
+
+
+/* useful macros */
+#define BIT_ISSET(bitfield, opt)	((bitfield) & (opt))
+#define BIT_SET(bitfield, opt)		((bitfield) |= (opt))
+#define BIT_CLEAR(bitfield, opt)	((bitfield) &= ~(opt))
+#define BIT_TOGGLE(bitfield, opt) { \
+  if (BIT_ISSET(bitfield, opt)) \
+    BIT_CLEAR(bitfield, opt); \
+  else \
+    BIT_SET(bitfield, opt); \
+  }
+
+
+/* flags for internal use */
+#define MMGR_VALID		1	/* memblock is valid */
+#define MMGR_FOREIGN		2	/* used by _mmgr_register() */
+
+#define MMGR_INTERNAL_MASK	255	/* mask for internal flags */
+
+
+
+struct @MMGR_PREFIX@_mmgr
+{
+	@MMGR_PREFIX@_memblock_t *mm_memblocks;
+	unsigned long mm_numblocks;
+	unsigned long mm_freeblock;
+};
+
+
+int
+@MMGR_PREFIX@_mmgr_init(@MMGR_PREFIX@_mmgr_t *mmgrp)
+{
+	*mmgrp = (@MMGR_PREFIX@_mmgr_t)calloc(1, sizeof(struct @MMGR_PREFIX@_mmgr));
+	if (*mmgrp == NULL)
+		return -1;
+
+	return 0;
+}
+
+
+void
+@MMGR_PREFIX@_mmgr_cleanup(@MMGR_PREFIX@_mmgr_t mmgr)
+{
+	int index;
+
+	for (index = 0; index < mmgr->mm_freeblock; index++)
+		@MMGR_PREFIX@_mmgr_free(mmgr->mm_memblocks + index, 1);
+
+	free(mmgr);
+}
+
+
+static int
+_find_free_memblock(@MMGR_PREFIX@_mmgr_t mmgr)
+{
+	void *ptr;
+	int index;
+
+#ifdef MMGR_DEBUG
+	puts("==> _find_free_memblock()");
+#endif
+
+	/* check if we can re-use previously-allocated memblocks */
+	for (index = 0; index < mmgr->mm_freeblock; index++)
+		if (! BIT_ISSET(mmgr->mm_memblocks[index].mb_flags, MMGR_VALID))
+		{
+#ifdef MMGR_DEBUG
+			printf("<== _find_free_memblock(): returning %d\n",
+			       index);
+#endif
+			return index;
+		}
+
+	/* allocate new memblocks if needed */
+	if (mmgr->mm_freeblock >= mmgr->mm_numblocks)
+	{
+		ptr = realloc(mmgr->mm_memblocks,
+			      (mmgr->mm_numblocks + 10) * sizeof(@MMGR_PREFIX@_memblock_t));
+		if (ptr == NULL)
+		{
+#ifdef MMGR_DEBUG
+			printf("<== _find_free_memblock(): returning -1\n");
+#endif
+			return -1;
+		}
+		mmgr->mm_memblocks = (@MMGR_PREFIX@_memblock_t *)ptr;
+		memset(mmgr->mm_memblocks + mmgr->mm_numblocks, 0,
+		       sizeof(@MMGR_PREFIX@_memblock_t) * 10);
+		mmgr->mm_numblocks += 10;
+	}
+
+#ifdef MMGR_DEBUG
+	printf("<== _find_free_memblock(): returning %d\n", mmgr->mm_freeblock);
+#endif
+	return mmgr->mm_freeblock++;
+}
+
+
+int
+@MMGR_PREFIX@_mmgr_malloc(@MMGR_PREFIX@_mmgr_t mmgr,
+			  unsigned long flags,
+			  size_t nelem,
+			  size_t elsize,
+			  @MMGR_PREFIX@_free_func_t freefunc,
+			  @MMGR_PREFIX@_memblock_t **blockpp)
+{
+	int index;
+
+	index = _find_free_memblock(mmgr);
+	if (index == -1)
+		return -1;
+
+	*blockpp = mmgr->mm_memblocks + index;
+
+	/* don't let caller set internal flags */
+	BIT_CLEAR(flags, MMGR_INTERNAL_MASK);
+
+	/* nelem is always set to 1 for non-arrays */
+	if (! BIT_ISSET(flags, @MMGR_PREFIX@_MMGR_ARRAY))
+		nelem = 1;
+
+	(*blockpp)->mb_flags = flags;
+	(*blockpp)->mb_elsize = elsize;
+	(*blockpp)->mb_nelem = nelem;
+	(*blockpp)->mb_freefunc = freefunc;
+	if ((nelem * elsize) == 0)
+		(*blockpp)->mb_ptr = NULL;
+	else
+	{
+		(*blockpp)->mb_ptr = calloc(nelem, elsize);
+		if ((*blockpp)->mb_ptr == NULL)
+			return -1;
+	}
+
+	/* now we can set the valid bit */
+	BIT_SET((*blockpp)->mb_flags, MMGR_VALID);
+
+	return 0;
+}
+
+
+int
+@MMGR_PREFIX@_mmgr_register(@MMGR_PREFIX@_mmgr_t mmgr,
+			    void *ptr,
+			    @MMGR_PREFIX@_free_func_t freefunc,
+			    @MMGR_PREFIX@_memblock_t **blockpp)
+{
+	int index;
+
+	index = _find_free_memblock(mmgr);
+	if (index == -1)
+		return -1;
+
+	*blockpp = mmgr->mm_memblocks + index;
+
+	memset(*blockpp, 0, sizeof(@MMGR_PREFIX@_memblock_t));
+	(*blockpp)->mb_ptr = ptr;
+	(*blockpp)->mb_freefunc = freefunc;
+	(*blockpp)->mb_flags = (MMGR_VALID | MMGR_FOREIGN);
+
+	return 0;
+}
+
+
+int
+@MMGR_PREFIX@_mmgr_array_add(@MMGR_PREFIX@_memblock_t *blockp, size_t nelem)
+{
+	void *ptr;
+	size_t oldsize, newsize;
+
+#ifdef MMGR_DEBUG
+	printf("==> @MMGR_PREFIX@_mmgr_array_add(blockp=0x%lx, nelem=%lu)\n",
+	       blockp, (unsigned long)nelem);
+#endif
+
+	oldsize = blockp->mb_elsize * blockp->mb_nelem;
+	newsize = blockp->mb_elsize * nelem;
+
+#ifdef MMGR_DEBUG
+	printf("    @MMGR_PREFIX@_mmgr_array_add(): oldsize=%lu newsize=%lu\n",
+	       (unsigned long)oldsize, (unsigned long)newsize);
+#endif
+
+	ptr = realloc(blockp->mb_ptr, newsize);
+	if (ptr == NULL)
+		return -1;
+
+	blockp->mb_ptr = ptr;
+	blockp->mb_nelem = nelem;
+
+	if (newsize > oldsize)
+	{
+		ptr = (unsigned char *)ptr + oldsize;
+		memset(ptr, 0, newsize - oldsize);
+	}
+
+	return 0;
+}
+
+
+int
+@MMGR_PREFIX@_mmgr_realloc(@MMGR_PREFIX@_memblock_t *blockp,
+			   size_t newsize)
+{
+	void *ptr;
+
+	ptr = realloc(blockp->mb_ptr, newsize);
+	if (ptr == NULL)
+		return -1;
+
+	blockp->mb_ptr = ptr;
+
+	if (newsize > blockp->mb_elsize)
+	{
+		ptr = (unsigned char *)ptr + blockp->mb_elsize;
+		memset(ptr, 0, newsize - blockp->mb_elsize);
+	}
+	blockp->mb_elsize = newsize;
+
+	return 0;
+}
+
+
+int
+@MMGR_PREFIX@_mmgr_free(@MMGR_PREFIX@_memblock_t *blockp, int freeflag)
+{
+#ifdef MMGR_DEBUG
+	printf("==> @MMGR_PREFIX@_mmgr_free(blockp=0x%lx, freeflag=%d)\n",
+	       blockp, freeflag);
+#endif
+
+	if (!BIT_ISSET(blockp->mb_flags, MMGR_VALID))
+		return 0;
+
+	if (freeflag && blockp->mb_ptr != NULL)
+		(*(blockp->mb_freefunc))(blockp->mb_ptr);
+
+	BIT_CLEAR(blockp->mb_flags, MMGR_VALID);
+
+	return 0;
+}
+
+

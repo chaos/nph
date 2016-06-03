@@ -1,0 +1,114 @@
+/* @configure_input@ */
+
+/*
+**  Copyright 1998-2004 University of Illinois Board of Trustees
+**  Copyright 1998-2004 Mark D. Roth
+**  All rights reserved.
+**
+**  @BUFFER_PREFIX@_buffer.c - network line buffer code
+**
+**  Mark D. Roth <roth@uiuc.edu>
+**  Campus Information Technologies and Educational Services
+**  University of Illinois at Urbana-Champaign
+*/
+
+#include <config.h>
+#include <compat.h>
+
+#include <@BUFFER_PREFIX@_buffer.h>
+
+#include <stdio.h>
+#include <errno.h>
+
+#ifdef STDC_HEADERS
+# include <string.h>
+#endif
+
+
+struct @BUFFER_PREFIX@_buffer
+{
+	char *b_buf;
+	size_t b_bufsize;
+	char *b_readp;
+	char *b_writep;
+	@BUFFER_PREFIX@_read_func_t b_readfunc;
+	void *b_app_data;
+};
+
+
+int
+@BUFFER_PREFIX@_buffer_new(@BUFFER_PREFIX@_buffer_t *bufp,
+			   size_t bufsize,
+			   @BUFFER_PREFIX@_read_func_t readfunc,
+			   void *app_data)
+{
+	*bufp = (@BUFFER_PREFIX@_buffer_t)calloc(1, sizeof(struct @BUFFER_PREFIX@_buffer));
+	if (*bufp == NULL)
+		return -1;
+
+	(*bufp)->b_buf = (char *)calloc(1, bufsize);
+	if ((*bufp)->b_buf == NULL)
+		return -1;
+
+	(*bufp)->b_readp = (*bufp)->b_writep = (*bufp)->b_buf;
+	(*bufp)->b_bufsize = bufsize;
+	(*bufp)->b_readfunc = readfunc;
+	(*bufp)->b_app_data = app_data;
+
+	return 0;
+}
+
+
+#define BUF_FREE_LEN(buf) \
+	(((buf)->b_bufsize - 1) - ((buf)->b_writep - (buf)->b_buf))
+
+
+ssize_t
+@BUFFER_PREFIX@_buffer_read_line(@BUFFER_PREFIX@_buffer_t buf,
+				 char *callbuf, size_t callbuflen)
+{
+	char *linep;
+	ssize_t sz;
+	size_t retlen;
+
+	/* keep reading until we have a line in the buffer */
+	while (strchr(buf->b_readp, '\n') == NULL)
+	{
+		sz = (*(buf->b_readfunc))(buf->b_app_data, buf->b_writep,
+					  BUF_FREE_LEN(buf));
+		if (sz == 0)
+		{
+			errno = ECONNRESET;
+			return -1;
+		}
+		if (sz == (ssize_t)-1)
+			return -1;
+		buf->b_writep += sz;
+		*(buf->b_writep) = '\0';
+	}
+
+	/* chop off the first line and move read pointer */
+	linep = strsep(&(buf->b_readp), "\n");
+
+	/* copy line to caller-suppied buffer */
+	retlen = strlcpy(callbuf, linep, callbuflen);
+
+	/* move remaining data to beginning of buffer and update pointers */
+	sz = buf->b_writep - buf->b_readp;
+	memmove(buf->b_buf, buf->b_readp, sz + 1);
+	buf->b_writep = buf->b_buf + sz;
+	buf->b_readp = buf->b_buf;
+
+	return retlen;
+}
+
+
+void
+@BUFFER_PREFIX@_free(@BUFFER_PREFIX@_buffer_t buf)
+{
+	if (buf->b_buf != NULL)
+		free(buf->b_buf);
+	free(buf);
+}
+
+

@@ -1,0 +1,33 @@
+.TH ph_set_sendhook 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_set_sendhook, ph_set_recvhook \- set libphclient debugging hooks
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.B "typedef void (*ph_debug_func_t)(void *, char *);"
+.br
+.BI "void ph_set_sendhook(PH *" ph ", ph_debug_func_t " sendfunc ");"
+.br
+.BI "void ph_set_recvhook(PH *" ph ", ph_debug_func_t " recvfunc ");"
+.br
+.BI "void ph_set_hookdata(PH *" ph ", void *" hook_data ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_set_sendhook\fP() and \fBph_set_recvhook\fP() functions set the
+\fIlibphclient\fP sending and receiving hooks to point to the application-
+supplied functions \fIsendfunc\fP and \fIrecvfunc\fP, respectively.
+
+Once these hooks are set, when each line of data is sent to or received
+from the PH server, the \fIsendfunc\fP and \fIrecvfunc\fP functions are
+called with two arguments.  The first is a pointer to application-specific
+data (set by the \fBph_set_hookdata\fP() function).  The second is
+a pointer to the line that was sent to or received from the server.
+This is typically used by the application to monitor and debug the
+communication between the library and the PH server.
+
+To unset the send and receive hooks, applications can call
+\fBph_set_sendhook\fP() and \fBph_set_recvhook\fP() with a second
+argument of \fBNULL\fP.
+.SH SEE ALSO
+.BR ph_open (3)

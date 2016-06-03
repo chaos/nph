@@ -1,0 +1,51 @@
+.TH ph_change 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_change, ph_add, ph_delete \- modify data on PH server
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_change(PH *" ph ", struct ph_fieldselector " query "[],"
+.BI "struct ph_fieldselector " change "[], int " flags ");"
+.br
+.BI "int ph_add(PH *" ph ", struct ph_fieldselector " fields "[]);"
+.br
+.BI "int ph_delete(PH *" ph ", struct ph_fieldselector " query "[]);"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_change\fP() function changes data on the PH server associated
+with the \fBPH\fP handle \fIph\fP.  The \fIquery\fP argument selects which
+entries will be changed in the same manner as for the \fBph_query\fP()
+function.  The \fIchange\fP argument is an array of changes to make
+on the server.  Each element of the array is a structure with three
+fields: \fIfield\fP (the name of the field to modify encoded as a
+string), \fIoperation\fP (a character value which must be set to '='),
+and \fIvalue\fP (a string value to set the field to).  The last element
+in the array must be set to all zeros.  If the \fIflags\fP argument is
+set to \fBPH_CHANGE_FORCE\fP, the "force" clause is used instead of the
+"make" clause when sending the change command to the server.
+
+The \fBph_add\fP() function adds a new PH entry whose contents are specified
+in \fIfields\fP.  This data is encoded just as the \fIchange\fP argument
+to \fBph_change\fP() above.
+
+The \fBph_delete\fP() function deletes entries from the PH server.  The
+\fIquery\fP argument selects which entries will be deleted in the same
+manner as for the \fBph_query\fP() function.
+.SH RETURN VALUE
+On success, the \fBph_change\fP() and \fBph_delete\fP() functions return
+the number of entries changed or deleted, or \fIPH_ERR_DATAERR\fP if the
+supplied field data is invalid.
+
+All of the functions described here return \fIPH_ERR_NOTLOG\fP if no user
+is logged in, and \fIPH_ERR_READONLY\fP if the server is in read-only
+mode.  On error, they return -1 and set \fIerrno\fP.
+.SH ERRORS
+The functions describe here will fail with \fBEINVAL\fP if they receive
+an unexpected response code from the server.  In addition, they may fail
+with any error from the functions \fIread\fP() or \fIwrite\fP().
+.SH SEE ALSO
+.BR read (2),
+.BR write (2),
+.BR ph_query (3),
+.BR ph_open (3)

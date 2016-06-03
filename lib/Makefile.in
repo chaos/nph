@@ -1,0 +1,93 @@
+# @configure_input@
+
+### Path settings
+srcdir		= @srcdir@
+top_srcdir	= @top_srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+mandir		= @mandir@
+libdir		= @libdir@
+includedir	= @includedir@
+
+PACKAGE_NAME	= @PACKAGE_NAME@
+PACKAGE_VERSION	= @PACKAGE_VERSION@
+
+@ENCAP_DEFS@
+
+### Installation programs and flags
+INSTALL		= @INSTALL@
+INSTALL_PROGRAM	= @INSTALL_PROGRAM@ -s
+INSTALL_DATA	= @INSTALL_DATA@
+LN_S		= @LN_S@
+MKDIR		= @MKDIR@
+
+### Compiler and link options
+CC		= @CC@
+CPPFLAGS	= -I.. \
+		  -I${srcdir} \
+		  -I${top_srcdir}/compat \
+		  -I../buffer \
+		  -I../mmgr \
+		  @CPPFLAGS@
+CFLAGS		= @CFLAGS@
+RANLIB		= @RANLIB@
+LIBOBJS		= @LIBOBJS@
+@SET_MAKE@
+VPATH		= @srcdir@:@top_srcdir@/compat:../buffer:../mmgr
+
+
+### Makefile rules - no user-servicable parts below
+
+LIBPHCLIENT_OBJS = auth.o \
+		   change.o \
+		   fields.o \
+		   handle.o \
+		   misc.o \
+		   options.o \
+		   ph_buffer.o \
+		   ph_mmgr.o \
+                   protocol.o \
+		   query.o \
+		   redirection.o \
+		   serverlist.o \
+                   siteinfo.o
+LIBPHCLIENT_HDRS = ../config.h \
+		   ${srcdir}/phclient.h \
+		   ${srcdir}/internal.h \
+                   ${top_srcdir}/compat/compat.h \
+                   ../buffer/ph_buffer.h \
+		   ../mmgr/ph_mmgr.h
+ALL		 = libphclient.a
+
+DISTCLEANFILES	= ../buffer/ph_buffer.c \
+		  ../buffer/ph_buffer.h \
+		  ../mmgr/ph_mmgr.c \
+		  ../mmgr/ph_mmgr.h
+
+
+all: ${ALL}
+
+.PHONY: clean distclean install
+
+libphclient.a: ${LIBPHCLIENT_OBJS} ${LIBOBJS}
+	${AR} rc libphclient.a ${LIBPHCLIENT_OBJS} ${LIBOBJS}
+	${RANLIB} libphclient.a
+
+${LIBPHCLIENT_OBJS}: ${LIBPHCLIENT_HDRS}
+
+.c.o:
+	${CC} ${CFLAGS} ${CPPFLAGS} -c -o $@ $<
+
+clean:
+	rm -f *~ *.o ${ALL} core
+
+distclean: clean
+	rm -f Makefile ${DISTCLEANFILES}
+
+install: all
+	${MKDIR} ${DESTDIR}${libdir}
+	${INSTALL_DATA} libphclient.a ${DESTDIR}${libdir}
+	${MKDIR} ${DESTDIR}${includedir}
+	${INSTALL_DATA} ${srcdir}/phclient.h ${DESTDIR}${includedir}
+

@@ -1,0 +1,72 @@
+.TH ph_get_option 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_get_option, ph_retrieve_options, ph_set_option, ph_option_iterate \- show and set PH server options
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_get_option(PH *" ph ", char *" option ","
+.BI "char **" setting ");"
+.br
+.BI "int ph_retrieve_options(PH *" ph ");"
+.br
+.BI "int ph_set_option(PH *" ph ", char *" option ","
+.BI "char *" setting ");"
+.br
+.BI "int ph_option_iterate(PH *" ph ", struct ph_option **" svropt ");"
+.br
+.BI "void ph_free_options(PH *" ph ");"
+.br
+.BI "int ph_is_optionlist_cached(PH *" ph ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+These functions allow the caller to access the list of options supported
+by the PH server associated with the \fBPH\fP handle \fIph\fP.  Each
+option is represented as a \fIstruct ph_option\fP, which contains the
+fields \fIoption\fP and \fIsetting\fP.
+
+The \fBph_retrieve_options\fP() function retrieves the option list from
+the PH server to be cached locally.  If the option list is already cached
+locally, the call will return successfully without doing anything.
+
+The \fBph_is_optionlist_cached\fP() macro determines if the option list
+is currently cached locally.
+
+The \fBph_free_options\fP() function clears the local option list cache.
+A subsequent call to \fBph_retrieve_options\fP() will reload the option
+list from the server.
+
+The \fBph_get_option\fP() function sets the \fIsetting\fP argument to point to
+the current value of the option named \fIoption\fP.  It automatically calls
+\fBph_retrieve_options\fP() if the option list is not cached locally.
+
+The \fBph_set_option\fP() function sets the value of \fIoption\fP to
+\fIsetting\fP.
+
+The \fBph_option_iterate\fP() function allows the caller to iterate
+through all server options by setting \fIsvropt\fP to point to the next
+option at each successive call.  To begin at the beginning of the list,
+the caller initializes \fIsvropt\fP to \fBNULL\fP.
+.SH RETURN VALUE
+The \fBph_retrieve_options\fP() function returns 0 on success, or -1 on error
+and sets \fIerrno\fP.
+
+The \fBph_is_optionlist_cached\fP() macro returns 1 if the option list is
+cached locally, or 0 otherwise.
+
+The \fBph_get_option\fP() and \fBph_set_option\fP() functions return 0 on
+success, or -1 on error, or \fIPH_ERR_DATAERR\fP if \fIoption\fP is not found.
+
+The \fBph_option_iterate\fP() function returns 1 when an option is returned,
+or 0 when the end of the list has been reached.  On error, it returns -1
+and sets \fIerrno\fP.
+.SH ERRORS
+The \fBph_get_options\fP() function will fail with \fBEINVAL\fP if it
+receives an unexpected response code from the server.
+
+The \fBph_get_options\fP() function may fail with any error from the functions
+\fIread\fP() or \fIwrite\fP().
+.SH SEE ALSO
+.BR read (2),
+.BR write (2),
+.BR ph_open (3)

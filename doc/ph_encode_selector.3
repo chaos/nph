@@ -1,0 +1,43 @@
+.TH ph_encode_selector 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_encode_selector, ph_free_selectors \- retrieve data from a PH server
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_encode_selector(char *" string ", int " requirefield ","
+.BI "int *" lastindex ", struct ph_fieldselector **" selectors ");"
+.br
+.BI "void ph_free_selectors(struct ph_fieldselector *" selectors ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_encode_selector\fP() function is a utility function for
+text-based applications which need to convert field specifiers from
+a string format into an array of \fIph_fieldselector\fP structures.
+
+The \fIstring\fP argument is a text string consisting of an optional
+field name and operator, as well as a mandantory value.  The
+\fIrequirefield\fP argument indicates whether the field portion
+of \fIstring\fP is required.
+
+The \fIselectors\fP argument is a pointer to a dynamically-allocated
+array of \fIph_fieldselector\fP structures.  The \fIlastindex\fP
+argument is a pointer to an integer which keeps track of the size
+of the \fIselectors\fP array.
+
+Successive calls to \fBph_encode_selector\fP() add the selector encoded in
+\fIstring\fP to the array pointed to by \fIselectors\fP.  Before calling
+\fBph_encode_selector\fP() for the first time on a given array, the caller
+should initialize \fIselectors\fP to \fBNULL\fP and \fIlastindex\fP to 0.
+
+The \fBph_free_selectors\fP() function is used to free memory allocated
+by \fBph_encode_selector\fP() for the \fIselectors\fP array.
+.SH RETURN VALUE
+On success, the \fBph_encode_selector\fP() function returns 0.  On error, it
+returns -1 and sets \fIerrno\fP.
+.SH ERRORS
+If the \fIrequirefield\fP argument is non-zero and \fIstring\fP does
+not include the field name and operator, \fBph_encode_selector\fP()
+returns -1 and sets \fIerrno\fP to \fBEINVAL\fP.
+.SH SEE ALSO
+.BR ph_query (3)

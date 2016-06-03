@@ -1,0 +1,33 @@
+.TH ph_rfd 3 "Oct 2002" "University of Illinois" "C Library Calls"
+.SH NAME
+ph_rfd, ph_wfd \- return file descriptors associated with a PH handle
+.SH SYNOPSIS
+.B #include <phclient.h>
+.P
+.BI "int ph_rfd(PH *" ph ");"
+.br
+.BI "int ph_wfd(PH *" ph ");"
+.SH VERSION
+This man page documents version 1.2 of \fBlibphclient\fP.
+.SH DESCRIPTION
+The \fBph_rfd\fP() and \fBph_wfd\fP() functions allow the application
+to access the underlying file descriptors used by the PH handle \fIph\fP
+to communicate with the PH server.  The application can use this
+information to detect communications problems with the server using
+\fBpoll\fP() or \fBselect\fP().
+.SH RETURN VALUES
+The \fBph_rfd\fP() function returns the file descriptor used for reading
+from the server.
+
+The \fBph_wfd\fP() function returns the file descriptor used for writing
+to the server.
+.SH NOTES
+The file descriptors used for reading and writing may be (and usually are)
+the same.
+
+The application must not write to or read from the file descriptors
+returned by the \fBph_rfd\fP() and \fBph_wfd\fP() functions.  If it does,
+the PH handle may be left in an inconsistent state, and all subsequent
+behavior is undefined.
+.SH SEE ALSO
+.BR ph_open (3)

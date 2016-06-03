@@ -1,0 +1,3 @@
+- redesign memmgr structure as a dynamically-allocated hash
+- make allocation calls as atomic as possible (e.g., block signals, use
+  mutexes, etc)

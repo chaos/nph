@@ -1,0 +1,69 @@
+/* @configure_input@ */
+
+/*
+**  Copyright 2000-2004 University of Illinois Board of Trustees
+**  Copyright 2000-2004 Mark D. Roth
+**  All rights reserved.
+**
+**  @MMGR_PREFIX@_buffer.h - header file for buffer module
+**
+**  Mark D. Roth <roth@uiuc.edu>
+**  Campus Information Technologies and Educational Services
+**  University of Illinois at Urbana-Champaign
+*/
+
+#ifndef @MMGR_PREFIX@_MMGR_H
+#define @MMGR_PREFIX@_MMGR_H
+
+#include <sys/types.h>
+
+
+/* bits for mb_flags field */
+#define @MMGR_PREFIX@_MMGR_ARRAY	256	/* array (elsize * nelem) */
+
+typedef void (*@MMGR_PREFIX@_free_func_t)(void *);
+
+struct @MMGR_PREFIX@_memblock
+{
+	unsigned long mb_flags;
+	void *mb_ptr;
+	size_t mb_elsize;
+	size_t mb_nelem;
+	@MMGR_PREFIX@_free_func_t mb_freefunc;
+};
+typedef struct @MMGR_PREFIX@_memblock @MMGR_PREFIX@_memblock_t;
+
+#define @MMGR_PREFIX@_mmgr_ptr(bp)	((bp)->mb_ptr)
+#define @MMGR_PREFIX@_mmgr_size(bp)	((bp)->mb_nelem * (bp)->mb_elsize)
+
+
+typedef struct @MMGR_PREFIX@_mmgr *@MMGR_PREFIX@_mmgr_t;
+
+
+int @MMGR_PREFIX@_mmgr_init(@MMGR_PREFIX@_mmgr_t *);
+
+void @MMGR_PREFIX@_mmgr_cleanup(@MMGR_PREFIX@_mmgr_t);
+
+int @MMGR_PREFIX@_mmgr_malloc(@MMGR_PREFIX@_mmgr_t,
+			      unsigned long,
+			      size_t,
+			      size_t,
+			      @MMGR_PREFIX@_free_func_t,
+			      @MMGR_PREFIX@_memblock_t **);
+
+int @MMGR_PREFIX@_mmgr_register(@MMGR_PREFIX@_mmgr_t,
+				void *,
+				@MMGR_PREFIX@_free_func_t,
+				@MMGR_PREFIX@_memblock_t **);
+
+int @MMGR_PREFIX@_mmgr_array_add(@MMGR_PREFIX@_memblock_t *,
+				 size_t);
+
+int @MMGR_PREFIX@_mmgr_realloc(@MMGR_PREFIX@_memblock_t *,
+			       size_t);
+
+int @MMGR_PREFIX@_mmgr_free(@MMGR_PREFIX@_memblock_t *,
+			    int);
+
+#endif /* ! @MMGR_PREFIX@_MMGR_H */
+

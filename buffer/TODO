@@ -1,0 +1,3 @@
+* add timeout functionality with poll()/select()
+* add *_buffer_write() function?
+  (similar to ph_send_command() or ftp_send_command())
